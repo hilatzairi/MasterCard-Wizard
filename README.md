@@ -72,6 +72,23 @@ Then you can go to `http://localhost:5173/swagger/index.html` to see the Swagger
 
 ---
 
+## Testing the API
+
+A `requests.http` file is included in the project root with pre-configured request examples for different wizard flows:
+- **Flow 1**: Regular flow for a small startup (simple path, no environment questions)
+- **Flow 2**: Environment selection flow (organization HAS existing environments - selects from list)
+- **Flow 3**: Environment flow (organization does NOT have environments - selects from predefined ranges)
+- **Flow 4**: Coverage flow for medium organizations
+
+To use these requests:
+1. Open `requests.http` in VS Code with the REST Client extension installed
+2. Click "Send Request" above any request
+3. Copy the `sessionId` from the response and replace `YOUR_SESSION_ID_HERE` in subsequent requests
+
+You can also use the Swagger UI at `http://localhost:5173/swagger/index.html` to test the API interactively.
+
+---
+
 ## Code Structure
 
 I have a few projects in this solution.

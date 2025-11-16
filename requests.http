@@ -1,0 +1,211 @@
+### ========================================
+### Wizard Assessment API - Test Requests
+### ========================================
+### Base URL
+@baseUrl = http://localhost:5173
+@contentType = application/json
+
+### ========================================
+### FLOW 1: Regular Flow - Small Startup (No Environments)
+### Organization: 1 - Small Startup (No Env)
+### Path: OrgSize -> Startup -> Recommended: Lite
+### ========================================
+
+### 1.1 Start Wizard for Small Startup
+POST {{baseUrl}}/api/wizard/start
+Content-Type: {{contentType}}
+
+{
+  "organizationId": 1
+}
+
+### RESPONSE: Will return OrgSize question
+### Copy the sessionId from response and use it below
+
+### 1.2 Answer OrgSize = "Small"
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "OrgSize",
+  "answer": "Small"
+}
+
+### RESPONSE: Will return Startup question
+
+### 1.3 Answer Startup = "Yes"
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "Startup",
+  "answer": "Yes"
+}
+
+### RESPONSE: Will return isCompleted=true, recommendedBucket="Lite"
+
+
+### ========================================
+### FLOW 2: Environment Selection Flow
+### Organization: 4 - Large Corp (With Env)
+### Path: OrgSize (Large) -> EnvSelection -> Recommended: Lite/Medium/Premium (based on selection)
+### ========================================
+
+### 2.1 Start Wizard for Large Corp with Environments
+POST {{baseUrl}}/api/wizard/start
+Content-Type: {{contentType}}
+
+{
+  "organizationId": 4
+}
+
+### RESPONSE: Will return OrgSize question
+### Copy the sessionId from response
+
+### 2.2 Answer OrgSize = "Large"
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "OrgSize",
+  "answer": "Large"
+}
+
+### RESPONSE: Will return EnvSelection question with dynamic options from organization's environments
+### Options will be: Production, Staging, Development, QA
+
+### 2.3 Answer EnvSelection - Select 2 environments (Medium bucket)
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "EnvSelection",
+  "answer": "Production,Staging"
+}
+
+### RESPONSE: Will return isCompleted=true, recommendedBucket="Medium" (2-3 environments)
+
+
+### ========================================
+### FLOW 3: Environment Flow (No Pre-existing Environments)
+### Organization: 3 - Large Corp (No Env)
+### Path: OrgSize (Large) -> Environments -> Recommended: Premium
+### ========================================
+
+### 3.1 Start Wizard for Large Corp without Environments
+POST {{baseUrl}}/api/wizard/start
+Content-Type: {{contentType}}
+
+{
+  "organizationId": 3
+}
+
+### RESPONSE: Will return OrgSize question
+### Copy the sessionId from response
+
+### 3.2 Answer OrgSize = "Large"
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "OrgSize",
+  "answer": "Large"
+}
+
+### RESPONSE: Will return Environments question (since org has no environments)
+
+### 3.3 Answer Environments = "4-10" (Premium bucket)
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "Environments",
+  "answer": "4-10"
+}
+
+### RESPONSE: Will return isCompleted=true, recommendedBucket="Premium"
+
+
+### ========================================
+### FLOW 4: Coverage Flow - Medium Organization
+### Organization: 2 - Medium Business
+### Path: OrgSize (Medium) -> Coverage -> Environments -> Recommended: Medium
+### ========================================
+
+### 4.1 Start Wizard for Medium Business
+POST {{baseUrl}}/api/wizard/start
+Content-Type: {{contentType}}
+
+{
+  "organizationId": 2
+}
+
+### RESPONSE: Will return OrgSize question
+
+### 4.2 Answer OrgSize = "Medium"
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "OrgSize",
+  "answer": "Medium"
+}
+
+### RESPONSE: Will return Coverage question
+
+### 4.3 Answer Coverage = "Most departments"
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "Coverage",
+  "answer": "Most departments"
+}
+
+### RESPONSE: Will return Environments question
+
+### 4.4 Answer Environments = "2-3" (Medium bucket)
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "Environments",
+  "answer": "2-3"
+}
+
+### RESPONSE: Will return isCompleted=true, recommendedBucket="Medium"
+
+
+### ========================================
+### Additional Test Cases
+### ========================================
+
+### Test: Get Swagger UI
+GET {{baseUrl}}/swagger/index.html
+
+### Test: Invalid Organization ID (should return 404)
+POST {{baseUrl}}/api/wizard/start
+Content-Type: {{contentType}}
+
+{
+  "organizationId": 999
+}
+
+### Test: Invalid Session ID (should return 404)
+POST {{baseUrl}}/api/wizard/sessions/00000000-0000-0000-0000-000000000000/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "OrgSize",
+  "answer": "Small"
+}
+
+### Test: Wrong Question Code (should return 400)
+POST {{baseUrl}}/api/wizard/sessions/YOUR_SESSION_ID_HERE/answer
+Content-Type: {{contentType}}
+
+{
+  "questionCode": "InvalidQuestion",
+  "answer": "SomeAnswer"
+}
+
