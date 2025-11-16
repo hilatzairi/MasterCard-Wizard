@@ -1,5 +1,8 @@
-CREATE SCHEMA McWizardDB;
-GO 
+CREATE DATABASE McWizardDB;
+GO
+
+USE McWizardDB;
+GO
 
 CREATE TABLE McWizardDB.Organizations (
     Id INT PRIMARY KEY IDENTITY,
